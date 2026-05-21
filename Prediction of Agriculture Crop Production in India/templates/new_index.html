@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Production Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div>
+                <h1>🌾 Crop Production Prediction System</h1>
+                <p>Predict crop production in India using machine learning.</p>
+            </div>
+            {% if username %}
+            <div class="user-bar">
+                <span>Signed in as <strong>{{ username }}</strong></span>
+                <a href="{{ url_for('logout') }}" class="btn-primary logout-btn">Logout</a>
+            </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        <section id="prediction-form">
+            <div class="page-header">
+                <h2>Crop Production Prediction</h2>
+                <p>🌱 Enter agricultural parameters and get production estimates instantly.</p>
+            </div>
+
+            {% if message %}
+                <div class="alert">{{ message }}</div>
+            {% endif %}
+
+            <div class="form-container">
+                <form method="post" action="{{ url_for('dashboard') }}">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <select id="state" name="state">
+                                {% for state in states %}
+                                <option value="{{ state }}" {% if input_data.State_Name == state %}selected{% endif %}>{{ state }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="district">District</label>
+                            <input type="text" id="district" name="district" value="{{ input_data.District_Name or 'Pune' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="crop_year">Crop Year</label>
+                            <input type="number" id="crop_year" name="crop_year" value="{{ input_data.Crop_Year or 2023 }}" min="2000" max="2030">
+                        </div>
+                        <div class="form-group">
+                            <label for="season">Season</label>
+                            <select id="season" name="season">
+                                {% for season in seasons %}
+                                <option value="{{ season }}" {% if input_data.Season == season %}selected{% endif %}>{{ season }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="crop">Crop</label>
+                            <select id="crop" name="crop">
+                                {% for crop in crops %}
+                                <option value="{{ crop }}" {% if input_data.Crop == crop %}selected{% endif %}>{{ crop }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="area">Area (hectares)</label>
+                            <input type="number" id="area" name="area" step="0.1" value="{{ input_data.Area or 10.0 }}" min="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="rainfall">Annual Rainfall (mm)</label>
+                            <input type="number" id="rainfall" name="rainfall" step="0.1" value="{{ input_data.Annual_Rainfall or 1200.0 }}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="fertilizer">Fertilizer (kg/ha)</label>
+                            <input type="number" id="fertilizer" name="fertilizer" step="0.1" value="{{ input_data.Fertilizer or 50.0 }}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="pesticide">Pesticide (kg/ha)</label>
+                            <input type="number" id="pesticide" name="pesticide" step="0.1" value="{{ input_data.Pesticide or 10.0 }}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="temperature">Temperature (°C)</label>
+                            <input type="number" id="temperature" name="temperature" step="0.1" value="{{ input_data.Temperature or 25.0 }}" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Predict Production</button>
+                    </div>
+                </form>
+            </div>
+
+            {% if prediction is not none %}
+            <section class="result-panel">
+                <h3>Predicted Production</h3>
+                <p class="result-value">{{ prediction }} tons</p>
+                <div class="result-grid">
+                    <div>
+                        <h4>Fertilizer Recommendation</h4>
+                        <pre>{{ fertilizer_rec | tojson(indent=2) }}</pre>
+                    </div>
+                    <div>
+                        <h4>Crop Recommendations</h4>
+                        <ul>
+                            {% for crop in recommendations %}
+                            <li>{{ crop }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+        </section>
+
+        <section id="dataset">
+            <h2>Dataset Summary</h2>
+            <div class="dataset-info">
+                <div><strong>Rows:</strong> {{ info.shape[0] if info else 'N/A' }}</div>
+                <div><strong>Columns:</strong> {{ info.shape[1] if info else 'N/A' }}</div>
+            </div>
+            <div class="preview-table">
+                <h3>Sample Data</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            {% if preview and preview|length > 0 %}
+                                {% for column in preview[0].keys() %}
+                                    <th>{{ column }}</th>
+                                {% endfor %}
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in preview %}
+                            <tr>
+                                {% for value in row.values() %}
+                                    <td>{{ value }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; Crop Production Prediction System. Open this page in Chrome to use the application.</p>
+    </footer>
+</body>
+</html>

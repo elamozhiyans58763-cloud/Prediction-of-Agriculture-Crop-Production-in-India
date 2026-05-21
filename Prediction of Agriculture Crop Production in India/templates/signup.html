@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Crop Production Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-card">
+            <div class="login-form-panel">
+                <div class="login-brand">
+                    <h1>🌱 Join Us</h1>
+                    <p>Sign up to start using the crop production prediction dashboard.</p>
+                </div>
+
+                {% if error %}
+                <div class="alert">{{ error }}</div>
+                {% endif %}
+
+                {% if success %}
+                <div class="alert alert-success">{{ success }}</div>
+                {% endif %}
+
+                <form method="post" action="{{ url_for('signup') }}" class="login-form">
+                    <div class="form-group">
+                        <label for="username">👤 Username</label>
+                        <input type="text" id="username" name="username" value="{{ username or '' }}" required minlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">📧 Email</label>
+                        <input type="email" id="email" name="email" value="{{ email or '' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">🔐 Password</label>
+                        <input type="password" id="password" name="password" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">✓ Confirm Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn-primary login-btn">🌿 Create Account</button>
+                </form>
+
+                <div class="login-footer">
+                    <p>Already have an account? <a href="{{ url_for('login') }}">Sign in here</a></p>
+                </div>
+            </div>
+
+            <div class="login-image-panel">
+                <div class="login-image-copy">
+                    <h2>🌾 Harvest Success</h2>
+                    <p>Create your account and start predicting crop production with our powerful nature-inspired ML models.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
